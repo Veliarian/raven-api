@@ -21,13 +21,13 @@ public class LessonResponse {
     @Schema(description = "Lesson description", example = "How to use Stream API with arrays...")
     private String description;
 
-    @Schema(description = "Subject", example = "{id: 5, name: 'Java'}")
-    private SubjectResponse subjectResponse;
+    @Schema(description = "Subject", example = "Java")
+    private String subject;
 
     public LessonResponse(Lesson lesson) {
         this.id = lesson.getId();
         this.topic = lesson.getTopic();
         this.description = lesson.getDescription();
-        this.subjectResponse = new SubjectResponse(lesson.getSubject());
+        this.subject = lesson.getSubject().getName();
     }
 }

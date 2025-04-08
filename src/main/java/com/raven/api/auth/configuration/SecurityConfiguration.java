@@ -67,20 +67,20 @@ public class SecurityConfiguration {
                 .logout(logout -> logout.logoutUrl("/logout"))
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exception -> exception
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setContentType("application/json");
-                            response.setCharacterEncoding("UTF-8");
-                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
-
-                            Map<String, String> errorResponse = new HashMap<>();
-                            errorResponse.put("error", "Unauthorized access");
-                            errorResponse.put("message", authException.getMessage());
-
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-                        }));
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+//                .exceptionHandling(exception -> exception
+//                        .authenticationEntryPoint((request, response, authException) -> {
+//                            response.setContentType("application/json");
+//                            response.setCharacterEncoding("UTF-8");
+//                            response.setStatus(HttpStatus.UNAUTHORIZED.value());
+//
+//                            Map<String, String> errorResponse = new HashMap<>();
+//                            errorResponse.put("error", "Unauthorized access");
+//                            errorResponse.put("message", authException.getMessage());
+//
+//                            ObjectMapper objectMapper = new ObjectMapper();
+//                            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+//                        }));
         return http.build();
     }
 

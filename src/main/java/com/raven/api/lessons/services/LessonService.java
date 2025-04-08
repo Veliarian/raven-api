@@ -47,11 +47,13 @@ public class LessonService {
 
     public Lesson createLesson(LessonCreateRequest request) {
         Subject subject = subjectService.getSubjectById(request.getSubjectId());
+        User user = userService.getCurrentUser();
 
         Lesson lesson = Lesson.builder()
                 .subject(subject)
                 .topic(request.getTopic())
                 .description(request.getDescription())
+                .owner(user)
                 .build();
 
         return save(lesson);

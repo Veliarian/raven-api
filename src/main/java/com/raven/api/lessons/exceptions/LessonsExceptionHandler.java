@@ -10,23 +10,27 @@ import java.util.Map;
 @ControllerAdvice
 public class LessonsExceptionHandler {
 
+    private ResponseEntity<Map<String, String>> response(String error) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", error));
+    }
+
     @ExceptionHandler(LessonNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleLessonNotFoundException(LessonNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+        return response(ex.getMessage());
     }
 
     @ExceptionHandler(ForbiddenException.class)
     public ResponseEntity<Map<String, String>> handleForbiddenException(ForbiddenException ex) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", ex.getMessage()));
+        return response(ex.getMessage());
     }
 
     @ExceptionHandler(SubjectAlreadyExistsException.class)
     public ResponseEntity<Map<String, String>> handleSubjectAlreadyExistsException(SubjectAlreadyExistsException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("error", ex.getMessage()));
+        return response(ex.getMessage());
     }
 
     @ExceptionHandler(SubjectNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleSubjectNotFoundException(SubjectNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", ex.getMessage()));
+        return response(ex.getMessage());
     }
 }
