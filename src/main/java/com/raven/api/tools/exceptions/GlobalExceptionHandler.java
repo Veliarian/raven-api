@@ -28,6 +28,12 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", "You do not have permission to perform this action."));
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<Map<String, String>> handleForbiddenException(ForbiddenException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
     // Обробка інших винятків
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {

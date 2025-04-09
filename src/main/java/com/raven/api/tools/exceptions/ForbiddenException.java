@@ -1,4 +1,4 @@
-package com.raven.api.lessons.exceptions;
+package com.raven.api.tools.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

@@ -5,7 +5,7 @@ import com.raven.api.lessons.dto.LessonResponse;
 import com.raven.api.lessons.dto.LessonUpdateRequest;
 import com.raven.api.lessons.entity.Lesson;
 import com.raven.api.lessons.entity.Subject;
-import com.raven.api.lessons.exceptions.ForbiddenException;
+import com.raven.api.tools.exceptions.ForbiddenException;
 import com.raven.api.lessons.exceptions.LessonNotFoundException;
 import com.raven.api.lessons.repositories.LessonRepository;
 import com.raven.api.users.entity.User;

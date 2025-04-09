@@ -16,5 +16,10 @@ public class UserExceptionHandler {
                 .body(Map.of("error", "User already exists", "message", ex.getMessage()));
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleUserNotFoundException(UserNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "User not found", "message", ex.getMessage()));
+    }
 }
 

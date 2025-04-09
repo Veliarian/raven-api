@@ -1,5 +1,6 @@
 package com.raven.api.lessons.exceptions;
 
+import com.raven.api.tools.exceptions.ForbiddenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,11 +17,6 @@ public class LessonsExceptionHandler {
 
     @ExceptionHandler(LessonNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleLessonNotFoundException(LessonNotFoundException ex) {
-        return response(ex.getMessage());
-    }
-
-    @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<Map<String, String>> handleForbiddenException(ForbiddenException ex) {
         return response(ex.getMessage());
     }
 
