@@ -3,8 +3,8 @@ spring:
         name: raven-api
     datasource:
         url: jdbc:postgresql://localhost:5432/raven
-        username: raven_admin
-        password: qzwxecdsa
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
     jpa:
         hibernate:
             ddl-auto: update
@@ -13,9 +13,10 @@ spring:
             client:
                 registration:
                     google:
-
-                        redirect-uri: http://localhost:8080/login/oauth2/code/google
+                        client-id: ${GOOGLE_CLIENT_ID}
+                        client-secret: ${GOOGLE_CLIENT_SECRET}
+                        redirect-uri: ${GOOGLE_REDIRECT_URI}
                         scope: profile, email
 
 auth:
-    key: db817e58a46f1dd542ecb9fea1f6c020e20a391a9c0abba39b593862a7ae4646
+    key:
