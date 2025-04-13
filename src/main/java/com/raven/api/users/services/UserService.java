@@ -3,23 +3,37 @@ package com.raven.api.users.services;
 import com.raven.api.tools.exceptions.ForbiddenException;
 import com.raven.api.users.dto.UpdateUserRequest;
 import com.raven.api.users.dto.UserResponse;
+import com.raven.api.users.entity.ProfilePicture;
+import com.raven.api.users.entity.UserProfile;
 import com.raven.api.users.enums.Role;
+import com.raven.api.users.exceptions.ProfilePictureNotFoundException;
 import com.raven.api.users.exceptions.UserAlreadyExistsException;
 import com.raven.api.users.entity.User;
 import com.raven.api.users.exceptions.UserNotFoundException;
 import com.raven.api.users.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    @Value("${files.avatar-dir}")
+    private String avatarDir;
+
     private final UserRepository repository;
 
     public UserResponse toResponse(User user) {
@@ -110,18 +124,23 @@ public class UserService {
             updated = true;
         }
 
-        if (request.getFirstName() != null && !request.getFirstName().equals(updatedUser.getUserProfile().getFirstName())) {
-            updatedUser.getUserProfile().setFirstName(request.getFirstName());
+        if (request.getFirstname() != null && !request.getFirstname().equals(updatedUser.getUserProfile().getFirstname())) {
+            updatedUser.getUserProfile().setFirstname(request.getFirstname());
             updated = true;
         }
 
-        if (request.getLastName() != null && !request.getLastName().equals(updatedUser.getUserProfile().getLastName())) {
-            updatedUser.getUserProfile().setLastName(request.getLastName());
+        if (request.getLastname() != null && !request.getLastname().equals(updatedUser.getUserProfile().getLastname())) {
+            updatedUser.getUserProfile().setLastname(request.getLastname());
             updated = true;
         }
 
         if (request.getPatronymic() != null && !request.getPatronymic().equals(updatedUser.getUserProfile().getPatronymic())) {
             updatedUser.getUserProfile().setPatronymic(request.getPatronymic());
+            updated = true;
+        }
+
+        if (!request.getBio().equals(updatedUser.getUserProfile().getBio())) {
+            updatedUser.getUserProfile().setBio(request.getBio());
             updated = true;
         }
 
@@ -136,6 +155,50 @@ public class UserService {
         User user = getById(id);
         user.setRole(role);
         return save(user);
+    }
+
+    public String saveProfilePicture(MultipartFile file, Long userId) {
+        try{
+            Path uploadPath = Paths.get(avatarDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            Path filePath = uploadPath.resolve(fileName);
+            Files.copy(file.getInputStream(), filePath);
+
+            User user = getById(userId);
+
+            ProfilePicture profilePicture = user.getProfilePicture();
+
+            if (profilePicture == null) {
+                profilePicture = new ProfilePicture();
+                user.setProfilePicture(profilePicture);
+            }
+
+            user.getProfilePicture().setImageName(fileName);
+            save(user);
+
+            return fileName;
+        }  catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    public Path getProfilePicturePath(String fileName) {
+        return Paths.get(avatarDir).resolve(fileName);
+    }
+
+    public Path getProfilePicturePath(Long userId) {
+        User user = getById(userId);
+
+        if(user.getProfilePicture() == null) {
+            throw new ProfilePictureNotFoundException("Profile picture not found");
+        }
+
+        return Paths.get(avatarDir).resolve(user.getProfilePicture().getImageName());
     }
 
     /**
@@ -155,7 +218,6 @@ public class UserService {
      * @return текущий пользователь
      */
     public User getCurrentUser() {
-        // Получение имени пользователя из контекста Spring Security
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
     }

@@ -2,6 +2,7 @@ package com.raven.api.auth.filters;
 
 import com.raven.api.auth.services.JwtService;
 import com.raven.api.users.entity.User;
+import com.raven.api.users.entity.UserProfile;
 import com.raven.api.users.enums.Role;
 import com.raven.api.users.repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,8 +39,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                     newUser.setEmailVerified(emailVerified);
                     newUser.setRole(Role.ROLE_USER);
 
-                    newUser.getUserProfile().setFirstName(givenName);
-                    newUser.getUserProfile().setLastName(familyName);
+                    UserProfile profile = new UserProfile();
+                    profile.setFirstname(givenName);
+                    profile.setLastname(familyName);
+
+                    newUser.setUserProfile(profile);
                     return userRepository.save(newUser);
                 });
 

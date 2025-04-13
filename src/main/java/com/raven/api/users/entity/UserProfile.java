@@ -20,14 +20,18 @@ public class UserProfile {
     private Long id;
 
     @Column(name = "first_name")
-    private String firstName;
+    private String firstname;
 
     @Column(name = "last_name")
-    private String lastName;
+    private String lastname;
 
     @Column(name = "patronymic")
     private String patronymic;
 
+    @Column(name = "bio")
+    private String bio;
+
     @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

@@ -21,5 +21,11 @@ public class UserExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Map.of("error", "User not found", "message", ex.getMessage()));
     }
+
+    @ExceptionHandler(ProfilePictureNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleProfilePictureNotFoundException(ProfilePictureNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Profile picture not found", "message", ex.getMessage()));
+    }
 }
 
