@@ -46,25 +46,15 @@ public class UserController {
     }
 
     @PostMapping("/{id}/avatar")
-    public ResponseEntity<String> uploadAvatar(@RequestParam("file") MultipartFile file, @PathVariable Long id) {
-        String fileName = userService.saveProfilePicture(file, id);
+    public ResponseEntity<String> uploadProfilePicture(@RequestParam("file") MultipartFile file, @PathVariable Long id) {
+        String fileName = userService.updateProfilePicture(file, id);
         return ResponseEntity.status(HttpStatus.CREATED).body(fileName);
     }
 
     @GetMapping("/avatar/{picture}")
     public ResponseEntity<Resource> getAvatar(@PathVariable String picture) {
-        try {
-            Path filePath = userService.getProfilePicturePath(picture);
-            Resource resource = new UrlResource(filePath.toUri());
-
-            if (resource.exists() || resource.isReadable()) {
-                return ResponseEntity.ok(resource);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+        Resource resource = userService.getProfilePicture(picture);
+        return ResponseEntity.status(HttpStatus.OK).body(resource);
     }
 
     @PutMapping("/{id}")

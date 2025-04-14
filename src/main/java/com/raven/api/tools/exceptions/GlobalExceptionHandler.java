@@ -34,6 +34,12 @@ public class GlobalExceptionHandler {
                 .body(Map.of("error", ex.getMessage()));
     }
 
+    @ExceptionHandler(FileNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleFileNotFoundException(FileNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
     // Обробка інших винятків
 //    @ExceptionHandler(Exception.class)
 //    public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {
