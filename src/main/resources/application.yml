@@ -18,5 +18,8 @@ spring:
                         redirect-uri: ${GOOGLE_REDIRECT_URI}
                         scope: profile, email
 
+files:
+    avatar-dir: uploads/avatars
+
 auth:
     key: db817e58a46f1dd542ecb9fea1f6c020e20a391a9c0abba39b593862a7ae4646

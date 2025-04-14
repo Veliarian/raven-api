@@ -53,6 +53,7 @@ public class SecurityConfiguration {
                 }))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/v1/auth/**").permitAll()
+                        .requestMatchers("/v1/users/avatar/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",

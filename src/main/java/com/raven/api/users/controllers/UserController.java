@@ -7,11 +7,16 @@ import com.raven.api.users.dto.UserResponse;
 import com.raven.api.users.services.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 
 @RestController
@@ -38,6 +43,28 @@ public class UserController {
     public ResponseEntity<UserResponse> getCurrentUser() {
         User user = userService.getCurrentUser();
         return ResponseEntity.status(HttpStatus.OK).body(userService.toResponse(user));
+    }
+
+    @PostMapping("/{id}/avatar")
+    public ResponseEntity<String> uploadAvatar(@RequestParam("file") MultipartFile file, @PathVariable Long id) {
+        String fileName = userService.saveProfilePicture(file, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(fileName);
+    }
+
+    @GetMapping("/avatar/{picture}")
+    public ResponseEntity<Resource> getAvatar(@PathVariable String picture) {
+        try {
+            Path filePath = userService.getProfilePicturePath(picture);
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok(resource);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            }
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @PutMapping("/{id}")

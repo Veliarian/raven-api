@@ -42,8 +42,25 @@ public class User implements UserDetails {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    private UserProfile userProfile;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private UserProfile userProfile = new UserProfile();
+    private ProfilePicture profilePicture;
+
+    public void setUserProfile(UserProfile profile) {
+        this.userProfile = profile;
+        if(userProfile != null) {
+            userProfile.setUser(this);
+        }
+    }
+
+    public void setProfilePicture(ProfilePicture profilePicture) {
+        this.profilePicture = profilePicture;
+        if(profilePicture != null) {
+            profilePicture.setUser(this);
+        }
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
