@@ -1,5 +1,6 @@
 package com.raven.api.users.entity;
 
+import com.raven.api.files.entity.MediaFile;
 import com.raven.api.users.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -47,6 +48,9 @@ public class User implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProfilePicture profilePicture;
+
+    @OneToMany(mappedBy = "uploadedBy", fetch = FetchType.LAZY)
+    private List<MediaFile> mediaFiles;
 
     public void setUserProfile(UserProfile profile) {
         this.userProfile = profile;

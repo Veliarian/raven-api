@@ -8,6 +8,10 @@ spring:
     jpa:
         hibernate:
             ddl-auto: update
+    servlet:
+      multipart:
+          max-file-size: 50MB
+          max-request-size: 50MB
     security:
         oauth2:
             client:
@@ -20,6 +24,7 @@ spring:
 
 files:
     avatar-dir: uploads/avatars
+    upload-dir: uploads/media
 
 auth:
     key: db817e58a46f1dd542ecb9fea1f6c020e20a391a9c0abba39b593862a7ae4646
