@@ -38,6 +38,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final UserRepository userRepository;
     @Value("${files.avatar-dir}")
     private String avatarDir;
 
@@ -81,38 +82,31 @@ public class UserService {
 
     public User create(OAuth2User oAuth2User) {
         String email = oAuth2User.getAttribute("email");
-
-        if (repository.existsByEmail(email)) {
-            throw new UserAlreadyExistsException("User with email " + email + " already exists");
-        }
-
-        if (repository.existsByUsername(email)) {
-            throw new UserAlreadyExistsException("User with username " + email + " already exists");
-        }
-
         String givenName = oAuth2User.getAttribute("given_name");
         String familyName = oAuth2User.getAttribute("family_name");
         Boolean emailVerified = oAuth2User.getAttribute("email_verified");
 
         String pictureUrl = oAuth2User.getAttribute("picture");
 
-        User newUser = new User();
-        newUser.setEmail(email);
-        newUser.setUsername(email);
-        newUser.setEmailVerified(emailVerified);
-        newUser.setRole(Role.ROLE_USER);
+        return userRepository.findByEmail(email).orElseGet(() -> {
+            User newUser = new User();
+            newUser.setEmail(email);
+            newUser.setUsername(email);
+            newUser.setEmailVerified(emailVerified);
+            newUser.setRole(Role.ROLE_USER);
 
-        UserProfile profile = new UserProfile();
-        profile.setFirstname(givenName);
-        profile.setLastname(familyName);
+            UserProfile profile = new UserProfile();
+            profile.setFirstname(givenName);
+            profile.setLastname(familyName);
 
-        newUser.setUserProfile(profile);
+            newUser.setUserProfile(profile);
 
-        if(pictureUrl != null && !pictureUrl.isEmpty()) {
-            newUser.setProfilePicture(profilePictureService.savePictureFromGoogle(pictureUrl));
-        }
+            if (pictureUrl != null && !pictureUrl.isEmpty()) {
+                newUser.setProfilePicture(profilePictureService.savePictureFromGoogle(pictureUrl));
+            }
 
-        return save(newUser);
+            return save(newUser);
+        });
     }
 
     public User getById(Long id) {
@@ -146,7 +140,7 @@ public class UserService {
     public User updateUser(Long id, UpdateUserRequest request) {
         User currentUser = getCurrentUser();
 
-        if(!currentUser.getId().equals(id) && !currentUser.getRole().equals(Role.ROLE_ADMIN)) {
+        if (!currentUser.getId().equals(id) && !currentUser.getRole().equals(Role.ROLE_ADMIN)) {
             throw new ForbiddenException("You are not allowed to access this resource");
         }
 
@@ -220,9 +214,9 @@ public class UserService {
             Path filePath = Paths.get(avatarDir).resolve(picture);
             Resource resource = new UrlResource(filePath.toUri());
 
-            if(resource.exists() || resource.isReadable()) {
+            if (resource.exists() || resource.isReadable()) {
                 return resource;
-            }else {
+            } else {
                 throw new FileNotFoundException("Could not read file: " + picture);
             }
         } catch (IOException e) {
