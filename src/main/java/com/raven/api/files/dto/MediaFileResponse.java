@@ -28,7 +28,7 @@ public class MediaFileResponse {
 
     private MediaType mediaType;
 
-    private LocalDateTime uploadAt;
+    private LocalDateTime uploadedAt;
 
     private Long uploadedBy;
 
@@ -41,7 +41,7 @@ public class MediaFileResponse {
         this.contentType = mediaFile.getContentType();
         this.mediaType = mediaFile.getMediaType();
         this.size = mediaFile.getSize();
-        this.uploadAt = mediaFile.getUploadedAt();
+        this.uploadedAt = mediaFile.getUploadedAt();
         this.uploadedBy = mediaFile.getUploadedBy().getId();
         this.isPublic = mediaFile.isPublic();
     }
