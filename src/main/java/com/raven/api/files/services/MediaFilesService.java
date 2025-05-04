@@ -85,4 +85,8 @@ public class MediaFilesService {
             throw new RuntimeException(e);
         }
     }
+
+    public void deleteById(Long id) {
+
+    }
 }

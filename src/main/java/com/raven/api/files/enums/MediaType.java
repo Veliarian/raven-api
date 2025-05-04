@@ -1,11 +1,14 @@
 package com.raven.api.files.enums;
 
 public enum MediaType {
+    WORD,
+    EXCEL,
+    POWERPOINT,
+    PDF,
     IMAGE,
     VIDEO,
     AUDIO,
     DOCUMENT,
-    PRESENTATION,
     RECORDING,
     AVATAR,
     OTHER

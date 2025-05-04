@@ -60,17 +60,34 @@ public class MimeTypeUtils {
             return MediaType.VIDEO;
         } else if (contentType.startsWith("audio/")) {
             return MediaType.AUDIO;
-        } else if (contentType.equals("application/pdf")
-                || contentType.equals("application/msword")
+        } else if (contentType.equals("application/pdf")) {
+            return MediaType.PDF;
+        } else if (contentType.equals("application/msword")
                 || contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-                || contentType.equals("application/vnd.ms-excel")
+                || contentType.equals("application/vnd.openxmlformats-officedocument.wordprocessingml.template")
+                || contentType.equals("application/vnd.ms-word.document.macroEnabled.12")
+                || contentType.equals("application/vnd.ms-word.template.macroEnabled.12")) {
+            return MediaType.WORD;
+        } else if (contentType.equals("application/vnd.ms-excel")
                 || contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-                || contentType.equals("text/plain")
+                || contentType.equals("application/vnd.openxmlformats-officedocument.spreadsheetml.template")
+                || contentType.equals("application/vnd.ms-excel.sheet.macroEnabled.12")
+                || contentType.equals("application/vnd.ms-excel.template.macroEnabled.12")
+                || contentType.equals("application/vnd.ms-excel.addin.macroEnabled.12")
+                || contentType.equals("application/vnd.ms-excel.sheet.binary.macroEnabled.12")) {
+            return MediaType.EXCEL;
+        } else if (contentType.equals("application/vnd.ms-powerpoint")
+                || contentType.equals("application/vnd.openxmlformats-officedocument.presentationml.presentation")
+                || contentType.equals("application/vnd.openxmlformats-officedocument.presentationml.template")
+                || contentType.equals("application/vnd.openxmlformats-officedocument.presentationml.slideshow")
+                || contentType.equals("application/vnd.ms-powerpoint.addin.macroEnabled.12")
+                || contentType.equals("application/vnd.ms-powerpoint.presentation.macroEnabled.12")
+                || contentType.equals("application/vnd.ms-powerpoint.template.macroEnabled.12")
+                || contentType.equals("application/vnd.ms-powerpoint.slideshow.macroEnabled.12")) {
+            return MediaType.POWERPOINT;
+        } else if (contentType.equals("text/plain")
                 || contentType.equals("text/csv")) {
             return MediaType.DOCUMENT;
-        } else if (contentType.equals("application/vnd.ms-powerpoint")
-                || contentType.equals("application/vnd.openxmlformats-officedocument.presentationml.presentation")) {
-            return MediaType.PRESENTATION;
         }
 
         return MediaType.OTHER;

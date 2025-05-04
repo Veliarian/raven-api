@@ -32,6 +32,12 @@ public class MediaController {
         return ResponseEntity.status(HttpStatus.CREATED).body(mediaFilesService.toResponse(mediaFile));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteFile(@PathVariable Long id) {
+        mediaFilesService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
     @GetMapping("/user")
     public ResponseEntity<List<MediaFileResponse>> getAllMediaFilesByUser() {
         List<MediaFile> mediaFiles = mediaFilesService.getAllMediaFilesByUser();
