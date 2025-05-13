@@ -54,6 +54,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/v1/auth/**").permitAll()
                         .requestMatchers("/v1/users/avatar/**").permitAll()
+                        .requestMatchers("/token/**").permitAll()
+                        .requestMatchers("/livekit/webhook").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",

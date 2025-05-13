@@ -74,8 +74,15 @@ public class LessonController {
     @Operation(summary = "Get lesson by user id")
     @GetMapping("/user/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'TEACHER', 'STUDENT')")
-    public ResponseEntity<List<LessonResponse>> getLessonsByUser(@PathVariable Long id) {
+    public ResponseEntity<List<LessonResponse>> getLessonsByUserId(@PathVariable Long id) {
         List<Lesson> lessons = lessonService.getLessonsByUserId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(lessonService.toResponse(lessons));
+    }
+
+    @Operation(summary = "Get user lesson")
+    @GetMapping("/user")
+    public ResponseEntity<List<LessonResponse>> getLessonsByUser() {
+        List<Lesson> lessons = lessonService.getLessonsByUser();
         return ResponseEntity.status(HttpStatus.OK).body(lessonService.toResponse(lessons));
     }
 }

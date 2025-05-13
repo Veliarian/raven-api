@@ -100,4 +100,9 @@ public class LessonService {
 
         return lessonRepository.findLessonsByOwnerId(currentUser.getId());
     }
+
+    public List<Lesson> getLessonsByUser() {
+        User currentUser = userService.getCurrentUser();
+        return lessonRepository.findLessonsByOwnerId(currentUser.getId());
+    }
 }

@@ -26,5 +26,11 @@ files:
     avatar-dir: uploads/avatars
     upload-dir: uploads/media
 
+livekit:
+    api:
+        host: ${LIVEKIT_API_HOST:http://localhost:7880}
+        key: ${LIVEKIT_API_KEY:devkey}
+        secret: ${LIVEKIT_API_SECRET:secret}
+
 auth:
     key: db817e58a46f1dd542ecb9fea1f6c020e20a391a9c0abba39b593862a7ae4646

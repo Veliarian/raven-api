@@ -97,6 +97,13 @@
             <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
         </dependency>
 
+        <!--    LiveKit    -->
+        <dependency>
+            <groupId>io.livekit</groupId>
+            <artifactId>livekit-server</artifactId>
+            <version>0.9.0</version>
+        </dependency>
+
         <!--    Test    -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
