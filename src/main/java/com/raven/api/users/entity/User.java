@@ -1,6 +1,7 @@
 package com.raven.api.users.entity;
 
 import com.raven.api.files.entity.MediaFile;
+import com.raven.api.meetings.entity.Room;
 import com.raven.api.users.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +10,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -51,6 +54,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "uploadedBy", fetch = FetchType.LAZY)
     private List<MediaFile> mediaFiles;
+
+    @ManyToMany(mappedBy = "participants")
+    private Set<Room> rooms = new HashSet<>();
 
     public void setUserProfile(UserProfile profile) {
         this.userProfile = profile;

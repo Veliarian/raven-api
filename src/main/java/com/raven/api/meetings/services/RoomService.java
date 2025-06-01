@@ -3,8 +3,10 @@ package com.raven.api.meetings.services;
 import com.raven.api.meetings.dto.CreateRoomRequest;
 import com.raven.api.meetings.dto.RoomResponse;
 import com.raven.api.meetings.entity.Room;
+import com.raven.api.meetings.enums.RoomStatus;
 import com.raven.api.meetings.exceptions.RoomCreateException;
 import com.raven.api.meetings.repositories.RoomRepository;
+import com.raven.api.users.services.UserService;
 import io.livekit.server.RoomServiceClient;
 import livekit.LivekitModels;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +16,15 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class RoomService {
 
     private final RoomRepository repository;
+    private final RoomRepository roomRepository;
+    private final UserService userService;
 
     @Value("${livekit.api.host}")
     private String LIVEKIT_API_HOST = "http://localhost:7880";
@@ -30,7 +35,7 @@ public class RoomService {
     @Value("${livekit.api.secret}")
     private String LIVEKIT_API_SECRET = "secret";
 
-    private static final Integer LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT = 600; // 10 minutes
+    private static final Integer LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT = 60; // 10 minutes
 
     private final RoomServiceClient roomServiceClient = RoomServiceClient.createClient(
             LIVEKIT_API_HOST,
@@ -38,29 +43,44 @@ public class RoomService {
             LIVEKIT_API_SECRET
     );
 
-    public RoomResponse toResponse(Room room){
+    public RoomResponse toResponse(Room room) {
         return new RoomResponse(room);
     }
 
-    private Room save(Room room){
+    public List<RoomResponse> toResponse(List<Room> rooms) {
+        return rooms.stream().map(this::toResponse).collect(java.util.stream.Collectors.toList());
+    }
+
+    private Room save(Room room) {
         return repository.save(room);
     }
 
+    public List<Room> getRooms() {
+        return roomRepository.findAll();
+    }
+
     public Room createEmptyRoom(CreateRoomRequest request) {
-        if(request.getName() == null || request.getName().isBlank() ){
-            throw new RoomCreateException("Room name cannot be empty or blank");
+        if (request.getName() == null || request.getName().isBlank()) {
+            throw new RoomCreateException("Room name cannot be empty");
         }
 
-        try{
+        try {
             Call<LivekitModels.Room> call = roomServiceClient.createRoom(
                     request.getName(),
                     LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT
             );
             Response<LivekitModels.Room> response = call.execute();
+
+            if (!response.isSuccessful()) {
+                throw new RoomCreateException("Error creating room: " + response.message());
+            }
+
             LivekitModels.Room roomResponse = response.body();
 
             Room room = new Room();
             room.setName(roomResponse.getName());
+            room.setStatus(RoomStatus.ACTIVE);
+            room.addParticipant(userService.getCurrentUser());
 
             return save(room);
         } catch (IOException e) {

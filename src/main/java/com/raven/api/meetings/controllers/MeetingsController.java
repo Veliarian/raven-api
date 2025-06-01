@@ -15,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/meetings")
@@ -22,6 +24,12 @@ public class MeetingsController {
 
     private final RoomService roomService;
     private final MeetingsAuthenticationService authenticationService;
+
+    @GetMapping("/rooms")
+    public ResponseEntity<List<RoomResponse>> getRooms(){
+        List<Room> rooms = roomService.getRooms();
+        return ResponseEntity.status(HttpStatus.OK).body(roomService.toResponse(rooms));
+    }
 
     @PostMapping("/rooms")
     public ResponseEntity<RoomResponse> createEmptyRoom(@RequestBody CreateRoomRequest request) {
@@ -37,15 +45,15 @@ public class MeetingsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.toResponse(token));
     }
 
-//    @PostMapping(value = "/livekit/webhook", consumes = "application/webhook+json")
-//    public ResponseEntity<String> receiveWebhook(@RequestHeader("Authorization") String authHeader, @RequestBody String body) {
-//        WebhookReceiver webhookReceiver = new WebhookReceiver("devkey", "secret");
-//        try {
-//            LivekitWebhook.WebhookEvent event = webhookReceiver.receive(body, authHeader);
-//            System.out.println("LiveKit Webhook: " + event.toString());
-//        } catch (Exception e) {
-//            System.err.println("Error validating webhook event: " + e.getMessage());
-//        }
-//        return ResponseEntity.ok("ok");
-//    }
+    @PostMapping(value = "/livekit/webhook", consumes = "application/webhook+json")
+    public ResponseEntity<String> receiveWebhook(@RequestHeader("Authorization") String authHeader, @RequestBody String body) {
+        WebhookReceiver webhookReceiver = new WebhookReceiver("devkey", "secret");
+        try {
+            LivekitWebhook.WebhookEvent event = webhookReceiver.receive(body, authHeader);
+            System.out.println("LiveKit Webhook: " + event.toString());
+        } catch (Exception e) {
+            System.err.println("Error validating webhook event: " + e.getMessage());
+        }
+        return ResponseEntity.ok("ok");
+    }
 }

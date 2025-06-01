@@ -1,7 +1,12 @@
 package com.raven.api.meetings.entity;
 
+import com.raven.api.meetings.enums.RoomStatus;
+import com.raven.api.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @Entity
@@ -10,6 +15,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "rooms")
 public class Room {
     @Id
     @Column(name = "id")
@@ -19,4 +25,21 @@ public class Room {
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private RoomStatus status;
+
+    @ManyToMany
+    @JoinTable(
+            name = "room_user_map",
+            joinColumns = @JoinColumn(name = "room_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> participants = new HashSet<>();
+
+    public void addParticipant(User user) {
+        participants.add(user);
+        user.getRooms().add(this);
+    }
 }
