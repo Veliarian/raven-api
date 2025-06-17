@@ -55,7 +55,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/v1/auth/**").permitAll()
                         .requestMatchers("/v1/users/avatar/**").permitAll()
                         .requestMatchers("/token/**").permitAll()
-                        .requestMatchers("/livekit/webhook").permitAll()
+                        .requestMatchers("/v1/meetings/webhook").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",

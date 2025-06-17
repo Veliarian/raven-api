@@ -23,7 +23,10 @@ public class Room {
     @SequenceGenerator(name = "room_id_seq", sequenceName = "room_id_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "sid", unique = true)
+    private String sid;
+
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Enumerated(EnumType.STRING)

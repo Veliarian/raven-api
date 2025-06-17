@@ -35,7 +35,7 @@ public class RoomService {
     @Value("${livekit.api.secret}")
     private String LIVEKIT_API_SECRET = "secret";
 
-    private static final Integer LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT = 60; // 10 minutes
+    private static final Integer LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT = 120; // 2 minutes
 
     private final RoomServiceClient roomServiceClient = RoomServiceClient.createClient(
             LIVEKIT_API_HOST,
@@ -59,7 +59,7 @@ public class RoomService {
         return roomRepository.findAll();
     }
 
-    public Room createEmptyRoom(CreateRoomRequest request) {
+    public Room createRoom(CreateRoomRequest request) {
         if (request.getName() == null || request.getName().isBlank()) {
             throw new RoomCreateException("Room name cannot be empty");
         }
@@ -78,6 +78,7 @@ public class RoomService {
             LivekitModels.Room roomResponse = response.body();
 
             Room room = new Room();
+            room.setSid(roomResponse.getSid());
             room.setName(roomResponse.getName());
             room.setStatus(RoomStatus.ACTIVE);
             room.addParticipant(userService.getCurrentUser());
@@ -86,5 +87,9 @@ public class RoomService {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void deleteRoomBySid(String sid) {
+        roomRepository.deleteRoomBySid(sid);
     }
 }

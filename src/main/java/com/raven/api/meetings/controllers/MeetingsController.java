@@ -1,10 +1,8 @@
 package com.raven.api.meetings.controllers;
 
-import com.raven.api.meetings.dto.CreateRoomRequest;
-import com.raven.api.meetings.dto.CreateTokenRequest;
-import com.raven.api.meetings.dto.RoomResponse;
-import com.raven.api.meetings.dto.TokenResponse;
+import com.raven.api.meetings.dto.*;
 import com.raven.api.meetings.entity.Room;
+import com.raven.api.meetings.services.LivekitEventService;
 import com.raven.api.meetings.services.MeetingsAuthenticationService;
 import com.raven.api.meetings.services.RoomService;
 import io.livekit.server.AccessToken;
@@ -24,6 +22,7 @@ public class MeetingsController {
 
     private final RoomService roomService;
     private final MeetingsAuthenticationService authenticationService;
+    private final LivekitEventService livekitEventService;
 
     @GetMapping("/rooms")
     public ResponseEntity<List<RoomResponse>> getRooms(){
@@ -32,28 +31,39 @@ public class MeetingsController {
     }
 
     @PostMapping("/rooms")
-    public ResponseEntity<RoomResponse> createEmptyRoom(@RequestBody CreateRoomRequest request) {
-        Room emptyRoom = roomService.createEmptyRoom(request);
+    public ResponseEntity<RoomResponse> createRoom(@RequestBody CreateRoomRequest request) {
+        Room emptyRoom = roomService.createRoom(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(roomService.toResponse(emptyRoom));
     }
 
-    @PostMapping(value = "/token")
+    @PostMapping("/token")
     public ResponseEntity<TokenResponse> createToken(@RequestBody CreateTokenRequest request) {
-        System.out.println(request.getParticipantName());
-        System.out.println(request.getRoomName());
         AccessToken token = authenticationService.createToken(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.toResponse(token));
     }
 
-    @PostMapping(value = "/livekit/webhook", consumes = "application/webhook+json")
-    public ResponseEntity<String> receiveWebhook(@RequestHeader("Authorization") String authHeader, @RequestBody String body) {
-        WebhookReceiver webhookReceiver = new WebhookReceiver("devkey", "secret");
+    @PostMapping(value = "/webhook", consumes = {"application/webhook+json", "application/webhook+json;charset=UTF-8"})
+    public ResponseEntity<String> receiveWebhook(@RequestBody LivekitWebhookDto body) {
+        System.out.println("Webhook received: " + body.getEvent());
+
         try {
-            LivekitWebhook.WebhookEvent event = webhookReceiver.receive(body, authHeader);
-            System.out.println("LiveKit Webhook: " + event.toString());
+            livekitEventService.handleRoomEvent(body);
         } catch (Exception e) {
-            System.err.println("Error validating webhook event: " + e.getMessage());
+            System.err.println("Error handling event: " + e.getMessage());
         }
         return ResponseEntity.ok("ok");
     }
+
+//    @PostMapping(value = "/livekit/webhook")
+//    public ResponseEntity<String> receiveWebhook(@RequestHeader("Authorization") String authHeader, @RequestBody String body) {
+//        System.out.println("Webhook received:\n" + body);
+//        WebhookReceiver webhookReceiver = new WebhookReceiver("devkey", "secret");
+//        try {
+//            LivekitWebhook.WebhookEvent event = webhookReceiver.receive(body, authHeader);
+//            System.out.println("LiveKit Webhook: " + event.toString());
+//        } catch (Exception e) {
+//            System.err.println("Error validating webhook event: " + e.getMessage());
+//        }
+//        return ResponseEntity.ok("ok");
+//    }
 }
