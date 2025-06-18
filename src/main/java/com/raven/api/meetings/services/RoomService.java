@@ -35,7 +35,7 @@ public class RoomService {
     @Value("${livekit.api.secret}")
     private String LIVEKIT_API_SECRET = "secret";
 
-    private static final Integer LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT = 120; // 2 minutes
+    private static final Integer LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT = 20; // 2 minutes
 
     private final RoomServiceClient roomServiceClient = RoomServiceClient.createClient(
             LIVEKIT_API_HOST,

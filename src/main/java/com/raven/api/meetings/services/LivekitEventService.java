@@ -2,6 +2,8 @@ package com.raven.api.meetings.services;
 
 import com.raven.api.meetings.dto.LivekitWebhookDto;
 import com.raven.api.meetings.enums.LivekitRoomEvent;
+import jakarta.transaction.Transactional;
+import livekit.LivekitWebhook;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,17 +13,18 @@ public class LivekitEventService {
 
     private final RoomService roomService;
 
-    public void handleRoomEvent(LivekitWebhookDto dto) {
-        LivekitRoomEvent event = LivekitRoomEvent.fromEvent(dto.getEvent());
+    @Transactional
+    public void handleRoomEvent(LivekitWebhook.WebhookEvent webhookEvent) {
+        LivekitRoomEvent event = LivekitRoomEvent.fromEvent(webhookEvent.getEvent());
 
         switch (event) {
             case ROOM_STARTED:
-                System.out.println("Room started: " + dto.getRoom().getName());
+                System.out.println("Room started: " + webhookEvent.getRoom().getName());
                 break;
 
             case ROOM_FINISHED:
-                System.out.println("Room finished: " + dto.getRoom().getName());
-                roomService.deleteRoomBySid(dto.getRoom().getSid());
+                System.out.println("Room finished: " + webhookEvent.getRoom().getName());
+                roomService.deleteRoomBySid(webhookEvent.getRoom().getSid());
                 break;
 
             default:

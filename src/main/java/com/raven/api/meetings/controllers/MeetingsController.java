@@ -10,6 +10,7 @@ import io.livekit.server.WebhookReceiver;
 import livekit.LivekitWebhook;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,12 +43,14 @@ public class MeetingsController {
         return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.toResponse(token));
     }
 
-    @PostMapping(value = "/webhook", consumes = {"application/webhook+json", "application/webhook+json;charset=UTF-8"})
-    public ResponseEntity<String> receiveWebhook(@RequestBody LivekitWebhookDto body) {
-        System.out.println("Webhook received: " + body.getEvent());
+    @PostMapping(value = "/webhook", consumes = {"application/webhook+json", "application/json"})
+    public ResponseEntity<String> receiveWebhook(@RequestHeader("Authorization") String authHeader, @RequestBody String body) {
+        System.out.println("Webhook received: " + body);
+        WebhookReceiver webhookReceiver = new WebhookReceiver("devkey", "secret");
 
         try {
-            livekitEventService.handleRoomEvent(body);
+            LivekitWebhook.WebhookEvent event = webhookReceiver.receive(body, authHeader);
+            livekitEventService.handleRoomEvent(event);
         } catch (Exception e) {
             System.err.println("Error handling event: " + e.getMessage());
         }

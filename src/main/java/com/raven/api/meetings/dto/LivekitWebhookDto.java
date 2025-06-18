@@ -10,7 +10,11 @@ import lombok.*;
 @AllArgsConstructor
 public class LivekitWebhookDto {
 
+    private String id;
+
     private String event;
 
     private Room room;
+
+    private Long createdAt;
 }
