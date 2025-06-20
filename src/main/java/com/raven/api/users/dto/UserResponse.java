@@ -1,6 +1,7 @@
 package com.raven.api.users.dto;
 
 import com.raven.api.users.entity.User;
+import com.raven.api.users.enums.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +28,7 @@ public class UserResponse {
     private Boolean emailVerified;
 
     @Schema(description = "User role", example = "ROLE_USER")
-    private String role;
+    private Role role;
 
     @Schema(description = "First name", example = "John")
     private String firstName;
@@ -49,7 +50,7 @@ public class UserResponse {
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.emailVerified = user.getEmailVerified();
-        this.role = user.getRole().name();
+        this.role = user.getRole();
 
         if(user.getUserProfile() != null) {
             this.firstName = user.getUserProfile().getFirstname();

@@ -56,17 +56,4 @@ public class MeetingsController {
         }
         return ResponseEntity.ok("ok");
     }
-
-//    @PostMapping(value = "/livekit/webhook")
-//    public ResponseEntity<String> receiveWebhook(@RequestHeader("Authorization") String authHeader, @RequestBody String body) {
-//        System.out.println("Webhook received:\n" + body);
-//        WebhookReceiver webhookReceiver = new WebhookReceiver("devkey", "secret");
-//        try {
-//            LivekitWebhook.WebhookEvent event = webhookReceiver.receive(body, authHeader);
-//            System.out.println("LiveKit Webhook: " + event.toString());
-//        } catch (Exception e) {
-//            System.err.println("Error validating webhook event: " + e.getMessage());
-//        }
-//        return ResponseEntity.ok("ok");
-//    }
 }

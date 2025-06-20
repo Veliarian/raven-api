@@ -4,6 +4,7 @@ import com.raven.api.users.dto.UpdateRoleRequest;
 import com.raven.api.users.dto.UpdateUserRequest;
 import com.raven.api.users.entity.User;
 import com.raven.api.users.dto.UserResponse;
+import com.raven.api.users.mapper.UserMapper;
 import com.raven.api.users.services.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,25 +25,27 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Users")
 public class UserController {
+
     private final UserService userService;
+    private final UserMapper userMapper;
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         List<User> users = userService.getAll();
-        return ResponseEntity.status(HttpStatus.OK).body(userService.toResponse(users));
+        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toResponse(users));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         User user = userService.getById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(userService.toResponse(user));
+        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toResponse(user));
     }
 
     @GetMapping("/me")
     public ResponseEntity<UserResponse> getCurrentUser() {
         User user = userService.getCurrentUser();
-        return ResponseEntity.status(HttpStatus.OK).body(userService.toResponse(user));
+        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toResponse(user));
     }
 
     @PostMapping("/{id}/avatar")
@@ -60,7 +63,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserResponse> updateUserById(@PathVariable Long id, @RequestBody UpdateUserRequest request) {
         User user = userService.updateUser(id, request);
-        return ResponseEntity.status(HttpStatus.OK).body(userService.toResponse(user));
+        return ResponseEntity.status(HttpStatus.OK).body(userMapper.toResponse(user));
     }
 
     @DeleteMapping("/{id}")

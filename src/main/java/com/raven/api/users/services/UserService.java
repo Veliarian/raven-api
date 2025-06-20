@@ -45,14 +45,6 @@ public class UserService {
     private final UserRepository repository;
     private final ProfilePictureService profilePictureService;
 
-    public UserResponse toResponse(User user) {
-        return new UserResponse(user);
-    }
-
-    public List<UserResponse> toResponse(List<User> users) {
-        return users.stream().map(this::toResponse).collect(Collectors.toList());
-    }
-
     /**
      * Сохранение пользователя
      *
