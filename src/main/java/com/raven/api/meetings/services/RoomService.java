@@ -11,11 +11,13 @@ import io.livekit.server.RoomServiceClient;
 import livekit.LivekitModels;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -35,7 +37,7 @@ public class RoomService {
     @Value("${livekit.api.secret}")
     private String LIVEKIT_API_SECRET = "secret";
 
-    private static final Integer LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT = 600; // 2 minutes
+    private static final Integer LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT = 600; // 10 minutes
 
     private final RoomServiceClient roomServiceClient = RoomServiceClient.createClient(
             LIVEKIT_API_HOST,
@@ -64,32 +66,54 @@ public class RoomService {
             throw new RoomCreateException("Room name cannot be empty");
         }
 
-        try {
-            Call<LivekitModels.Room> call = roomServiceClient.createRoom(
-                    request.getName(),
-                    LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT
-            );
+        Room room = new Room();
+        room.setName(request.getName());
+
+        if (request.getStartTime() == null) {
+            LivekitModels.Room roomResponse = callToCreateRoom(request.getName());
+
+            room.setSid(roomResponse.getSid());
+            room.setStatus(RoomStatus.ACTIVE);
+            room.addParticipant(userService.getCurrentUser());
+        } else {
+            room.setStatus(RoomStatus.SCHEDULED);
+            room.setStartTime(request.getStartTime());
+            room.addParticipant(userService.getCurrentUser());
+        }
+
+        return save(room);
+    }
+
+    public void deleteRoomBySid(String sid) {
+        roomRepository.deleteRoomBySid(sid);
+    }
+
+    @Scheduled(fixedRate = 30000)
+    public void activateScheduledRoom() {
+        List<Room> scheduledRooms = roomRepository.findAllByStatusAndStartTimeBefore(RoomStatus.SCHEDULED, LocalDateTime.now());
+
+        for (Room scheduledRoom : scheduledRooms) {
+            LivekitModels.Room roomResponse = callToCreateRoom(scheduledRoom.getName());
+
+            scheduledRoom.setStatus(RoomStatus.ACTIVE);
+            scheduledRoom.setSid(roomResponse.getSid());
+            scheduledRoom.setStartTime(null);
+            save(scheduledRoom);
+        }
+    }
+
+    private LivekitModels.Room callToCreateRoom(String name) {
+        try{
+            Call<LivekitModels.Room> call = roomServiceClient.createRoom(name, LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT);
             Response<LivekitModels.Room> response = call.execute();
 
             if (!response.isSuccessful()) {
                 throw new RoomCreateException("Error creating room: " + response.message());
             }
 
-            LivekitModels.Room roomResponse = response.body();
-
-            Room room = new Room();
-            room.setSid(roomResponse.getSid());
-            room.setName(roomResponse.getName());
-            room.setStatus(RoomStatus.ACTIVE);
-            room.addParticipant(userService.getCurrentUser());
-
-            return save(room);
+            return response.body();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public void deleteRoomBySid(String sid) {
-        roomRepository.deleteRoomBySid(sid);
     }
 }

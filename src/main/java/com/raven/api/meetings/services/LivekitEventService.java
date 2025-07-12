@@ -1,6 +1,5 @@
 package com.raven.api.meetings.services;
 
-import com.raven.api.meetings.dto.LivekitWebhookDto;
 import com.raven.api.meetings.enums.LivekitRoomEvent;
 import jakarta.transaction.Transactional;
 import livekit.LivekitWebhook;

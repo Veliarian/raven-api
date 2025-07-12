@@ -5,6 +5,7 @@ import com.raven.api.users.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,6 +33,9 @@ public class Room {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private RoomStatus status;
+
+    @Column(name = "start_time")
+    private LocalDateTime startTime;
 
     @ManyToMany
     @JoinTable(

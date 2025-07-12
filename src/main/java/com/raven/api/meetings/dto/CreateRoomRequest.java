@@ -2,6 +2,8 @@ package com.raven.api.meetings.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @Getter
 @Setter
@@ -9,4 +11,5 @@ import lombok.*;
 @AllArgsConstructor
 public class CreateRoomRequest {
     private String name;
+    private LocalDateTime startTime;
 }
