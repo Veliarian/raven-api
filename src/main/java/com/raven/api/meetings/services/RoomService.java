@@ -6,6 +6,7 @@ import com.raven.api.meetings.entity.Room;
 import com.raven.api.meetings.enums.RoomStatus;
 import com.raven.api.meetings.exceptions.RoomCreateException;
 import com.raven.api.meetings.repositories.RoomRepository;
+import com.raven.api.users.entity.User;
 import com.raven.api.users.services.UserService;
 import io.livekit.server.RoomServiceClient;
 import livekit.LivekitModels;
@@ -58,7 +59,8 @@ public class RoomService {
     }
 
     public List<Room> getRooms() {
-        return roomRepository.findAll();
+        User user = userService.getCurrentUser();
+        return roomRepository.findAllByParticipants_Id(user.getId());
     }
 
     public Room createRoom(CreateRoomRequest request) {
@@ -74,11 +76,18 @@ public class RoomService {
 
             room.setSid(roomResponse.getSid());
             room.setStatus(RoomStatus.ACTIVE);
-            room.addParticipant(userService.getCurrentUser());
         } else {
             room.setStatus(RoomStatus.SCHEDULED);
             room.setStartTime(request.getStartTime());
-            room.addParticipant(userService.getCurrentUser());
+
+        }
+
+        room.addParticipant(userService.getCurrentUser());
+        if(request.getParticipantIds() != null && !request.getParticipantIds().isEmpty()){
+            request.getParticipantIds().forEach(participantId -> {
+               User user = userService.getById(participantId);
+               room.addParticipant(user);
+            });
         }
 
         return save(room);

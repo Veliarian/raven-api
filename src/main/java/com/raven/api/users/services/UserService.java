@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
     @Value("${files.avatar-dir}")
     private String avatarDir;
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
+
     private final ProfilePictureService profilePictureService;
 
     /**
@@ -51,7 +51,7 @@ public class UserService {
      * @return сохраненный пользователь
      */
     public User save(User user) {
-        return repository.save(user);
+        return userRepository.save(user);
     }
 
 
@@ -61,11 +61,11 @@ public class UserService {
      * @return созданный пользователь
      */
     public User create(User user) {
-        if (repository.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByUsername(user.getUsername())) {
             throw new UserAlreadyExistsException("User with username " + user.getUsername() + " already exists");
         }
 
-        if (repository.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new UserAlreadyExistsException("User with email " + user.getEmail() + " already exists");
         }
 
@@ -110,7 +110,7 @@ public class UserService {
             throw new ForbiddenException("You are not allowed to access this resource");
         }
 
-        return repository.findById(id)
+        return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found"));
     }
 
@@ -120,13 +120,17 @@ public class UserService {
      * @return пользователь
      */
     public User getByUsername(String username) {
-        return repository.findByUsername(username)
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
 
     }
 
     public List<User> getAll() {
-        return repository.findAll();
+        return userRepository.findAll();
+    }
+
+    public List<User> getAllWithoutCurrentUser() {
+        return userRepository.findAllByIdNot(getCurrentUser().getId());
     }
 
     public User updateUser(Long id, UpdateUserRequest request) {
@@ -174,11 +178,11 @@ public class UserService {
             updated = true;
         }
 
-        return updated ? repository.save(updatedUser) : updatedUser;
+        return updated ? userRepository.save(updatedUser) : updatedUser;
     }
 
     public void delete(Long id) {
-        repository.deleteById(id);
+        userRepository.deleteById(id);
     }
 
     public User updateRole(Long id, Role role) {

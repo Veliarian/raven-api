@@ -9,30 +9,26 @@ import com.raven.api.users.services.UserService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 @RestController
 @RequestMapping("/v1/users")
 @RequiredArgsConstructor
 @Tag(name = "Users")
-public class UserController {
+public class UsersController {
 
     private final UserService userService;
     private final UserMapper userMapper;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UserResponse>> getAllUsers() {
-        List<User> users = userService.getAll();
+        List<User> users = userService.getAllWithoutCurrentUser();
         return ResponseEntity.status(HttpStatus.OK).body(userMapper.toResponse(users));
     }
 
