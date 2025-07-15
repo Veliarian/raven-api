@@ -2,6 +2,7 @@ package com.raven.api.users.entity;
 
 import com.raven.api.files.entity.MediaFile;
 import com.raven.api.meetings.entity.Room;
+import com.raven.api.notes.entity.Note;
 import com.raven.api.users.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -54,6 +55,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "uploadedBy", fetch = FetchType.LAZY)
     private List<MediaFile> mediaFiles;
+
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+    private List<Note> notes;
 
     @ManyToMany(mappedBy = "participants")
     private Set<Room> rooms = new HashSet<>();
