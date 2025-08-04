@@ -9,6 +9,7 @@ import com.raven.api.meetings.repositories.RoomRepository;
 import com.raven.api.users.entity.User;
 import com.raven.api.users.services.UserService;
 import io.livekit.server.RoomServiceClient;
+import jakarta.annotation.PostConstruct;
 import livekit.LivekitModels;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,23 +29,18 @@ public class RoomService {
     private final RoomRepository repository;
     private final RoomRepository roomRepository;
     private final UserService userService;
+    private RoomServiceClient roomServiceClient;
 
     @Value("${livekit.api.host}")
-    private String LIVEKIT_API_HOST = "http://localhost:7880";
+    private String LIVEKIT_API_HOST;
 
     @Value("${livekit.api.key}")
-    private String LIVEKIT_API_KEY = "devkey";
+    private String LIVEKIT_API_KEY;
 
     @Value("${livekit.api.secret}")
-    private String LIVEKIT_API_SECRET = "secret";
+    private String LIVEKIT_API_SECRET;
 
     private static final Integer LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT = 600; // 10 minutes
-
-    private final RoomServiceClient roomServiceClient = RoomServiceClient.createClient(
-            LIVEKIT_API_HOST,
-            LIVEKIT_API_KEY,
-            LIVEKIT_API_SECRET
-    );
 
     public RoomResponse toResponse(Room room) {
         return new RoomResponse(room);
@@ -112,6 +108,12 @@ public class RoomService {
     }
 
     private LivekitModels.Room callToCreateRoom(String name) {
+        roomServiceClient = RoomServiceClient.createClient(
+                LIVEKIT_API_HOST,
+                LIVEKIT_API_KEY,
+                LIVEKIT_API_SECRET
+        );
+
         try{
             Call<LivekitModels.Room> call = roomServiceClient.createRoom(name, LIVEKIT_ROOM_MAX_EMPTY_TIMEOUT);
             Response<LivekitModels.Room> response = call.execute();

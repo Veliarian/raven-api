@@ -6,16 +6,17 @@ import com.raven.api.meetings.exceptions.MeetingTokenCreateException;
 import io.livekit.server.AccessToken;
 import io.livekit.server.RoomJoin;
 import io.livekit.server.RoomName;
-import io.livekit.server.VideoGrant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class MeetingsAuthenticationService {
 
-    private String LIVEKIT_API_KEY = "devkey";
+    @Value("${livekit.api.key}")
+    private String LIVEKIT_API_KEY;
 
-    private String LIVEKIT_API_SECRET = "secret";
+    @Value("${livekit.api.secret}")
+    private String LIVEKIT_API_SECRET;
 
     public TokenResponse toResponse(AccessToken token) {
         return new TokenResponse(token);

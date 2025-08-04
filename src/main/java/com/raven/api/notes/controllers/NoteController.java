@@ -2,6 +2,7 @@ package com.raven.api.notes.controllers;
 
 import com.raven.api.notes.dto.CreateNoteRequest;
 import com.raven.api.notes.dto.NoteResponse;
+import com.raven.api.notes.dto.UpdateNoteRequest;
 import com.raven.api.notes.entity.Note;
 import com.raven.api.notes.mapper.NoteMapper;
 import com.raven.api.notes.services.NoteService;
@@ -23,13 +24,28 @@ public class NoteController {
     @GetMapping
     public ResponseEntity<List<NoteResponse>> getNotes() {
         List<Note> notes = noteService.getAllByCurrentUser();
+        notes.forEach(note -> System.out.println(note.getCreationTime()));
         return ResponseEntity.status(HttpStatus.OK).body(noteMapper.toResponse(notes));
     }
 
     @PostMapping
     public ResponseEntity<NoteResponse> createNote(@RequestBody CreateNoteRequest createNoteRequest){
-        System.out.println(createNoteRequest.toString());
         Note note = noteService.create(createNoteRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(noteMapper.toResponse(note));
+    }
+
+    @PutMapping("/{noteId}")
+    public ResponseEntity<NoteResponse> updateNote(@PathVariable Long noteId,
+                                                   @RequestBody UpdateNoteRequest updateNoteRequest){
+        System.out.println(noteId);
+        System.out.println(updateNoteRequest.toString());
+        Note note = noteService.updateNote(noteId, updateNoteRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(noteMapper.toResponse(note));
+    }
+
+    @DeleteMapping("/{noteId}")
+    public ResponseEntity<NoteResponse> deleteNote(@PathVariable Long noteId) {
+        noteService.deleteNoteById(noteId);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

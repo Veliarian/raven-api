@@ -67,7 +67,7 @@ public class SecurityConfiguration {
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcUserService()))
                         .successHandler(oAuth2AuthenticationSuccessHandler))
-                .logout(logout -> logout.logoutUrl("/logout"))
+                .logout(logout -> logout.logoutUrl("v1/logout"))
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
