@@ -3,6 +3,7 @@ package com.raven.api.notes.controllers;
 import com.raven.api.notes.dto.CreateNoteRequest;
 import com.raven.api.notes.dto.NoteResponse;
 import com.raven.api.notes.dto.UpdateNoteRequest;
+import com.raven.api.notes.dto.UpdateReminderTimeRequest;
 import com.raven.api.notes.entity.Note;
 import com.raven.api.notes.mapper.NoteMapper;
 import com.raven.api.notes.services.NoteService;
@@ -29,17 +30,22 @@ public class NoteController {
     }
 
     @PostMapping
-    public ResponseEntity<NoteResponse> createNote(@RequestBody CreateNoteRequest createNoteRequest){
+    public ResponseEntity<NoteResponse> createNote(@RequestBody CreateNoteRequest createNoteRequest) {
         Note note = noteService.create(createNoteRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(noteMapper.toResponse(note));
     }
 
     @PutMapping("/{noteId}")
     public ResponseEntity<NoteResponse> updateNote(@PathVariable Long noteId,
-                                                   @RequestBody UpdateNoteRequest updateNoteRequest){
-        System.out.println(noteId);
-        System.out.println(updateNoteRequest.toString());
+                                                   @RequestBody UpdateNoteRequest updateNoteRequest) {
         Note note = noteService.updateNote(noteId, updateNoteRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(noteMapper.toResponse(note));
+    }
+
+    @PutMapping("/{noteId}/reminderTime")
+    public ResponseEntity<NoteResponse> updateReminderTime(@PathVariable Long noteId,
+                                                           @RequestBody UpdateReminderTimeRequest request) {
+        Note note = noteService.updateReminderTime(noteId, request);
         return ResponseEntity.status(HttpStatus.OK).body(noteMapper.toResponse(note));
     }
 
