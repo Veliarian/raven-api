@@ -34,6 +34,8 @@ public class MediaFileResponse {
 
     private boolean isPublic;
 
+    private boolean isInTrash;
+
     public MediaFileResponse(MediaFile mediaFile) {
         this.id = mediaFile.getId();
         this.originalName = mediaFile.getOriginalName();
@@ -44,5 +46,6 @@ public class MediaFileResponse {
         this.uploadedAt = mediaFile.getUploadedAt();
         this.uploadedBy = mediaFile.getUploadedBy().getId();
         this.isPublic = mediaFile.isPublic();
+        this.isInTrash = mediaFile.isInTrash();
     }
 }

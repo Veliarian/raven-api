@@ -46,6 +46,9 @@ public class MediaFile {
     @Column(name = "is_public")
     private boolean isPublic;
 
+    @Column(name = "is_in_trash")
+    private boolean isInTrash;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploaded_by_id")
     private User uploadedBy;

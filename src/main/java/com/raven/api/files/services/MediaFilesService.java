@@ -25,19 +25,12 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class MediaFilesService {
+    private final MediaFileRepository mediaFileRepository;
     @Value("${files.upload-dir}")
     private String uploadDir;
 
     private final MediaFileRepository repository;
     private final UserService userService;
-
-    public MediaFileResponse toResponse(MediaFile mediaFile) {
-        return new MediaFileResponse(mediaFile);
-    }
-
-    public List<MediaFileResponse> toResponse(List<MediaFile> mediaFiles) {
-        return mediaFiles.stream().map(this::toResponse).collect(Collectors.toList());
-    }
 
     private MediaFile save(MediaFile mediaFile) {
         return repository.save(mediaFile);
@@ -77,7 +70,6 @@ public class MediaFilesService {
             mediaFile.setSize(file.getSize());
             mediaFile.setUploadedBy(user);
             mediaFile.setUploadedAt(LocalDateTime.now());
-            mediaFile.setPublic(false);
 
             return save(mediaFile);
 
@@ -86,7 +78,27 @@ public class MediaFilesService {
         }
     }
 
+    public void moveToTrash(Long id) {
+        MediaFile mediaFile = mediaFileRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("File not found with id " + id)
+        );
+
+        mediaFile.setInTrash(true);
+        save(mediaFile);
+    }
+
     public void deleteById(Long id) {
+        MediaFile mediaFile = mediaFileRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("File not found with id " + id)
+        );
+        mediaFileRepository.delete(mediaFile);
+
+        Path path = Paths.get(uploadDir + "/" + mediaFile.getStoreName());
+        try {
+            Files.delete(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }
