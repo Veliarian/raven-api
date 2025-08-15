@@ -4,6 +4,7 @@ import com.raven.api.auth.dto.JwtAuthenticationResponse;
 import com.raven.api.auth.dto.SignInRequest;
 import com.raven.api.auth.dto.SignUpRequest;
 import com.raven.api.users.entity.User;
+import com.raven.api.users.entity.UserProfile;
 import com.raven.api.users.enums.Role;
 import com.raven.api.users.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,7 @@ public class AuthenticationService {
                 .emailVerified(false)
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.ROLE_USER)
+                .userProfile(new UserProfile())
                 .build();
 
         userService.create(user);

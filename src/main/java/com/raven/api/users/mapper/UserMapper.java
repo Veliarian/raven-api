@@ -26,6 +26,7 @@ public class UserMapper {
             response.setFirstName(profile.getFirstname());
             response.setLastName(profile.getLastname());
             response.setPatronymic(profile.getPatronymic());
+            response.setBio(profile.getBio());
         });
 
         Optional.ofNullable(user.getProfilePicture()).ifPresent(profilePicture -> {

@@ -25,7 +25,6 @@ public class NoteController {
     @GetMapping
     public ResponseEntity<List<NoteResponse>> getNotes() {
         List<Note> notes = noteService.getAllByCurrentUser();
-        notes.forEach(note -> System.out.println(note.getCreationTime()));
         return ResponseEntity.status(HttpStatus.OK).body(noteMapper.toResponse(notes));
     }
 
