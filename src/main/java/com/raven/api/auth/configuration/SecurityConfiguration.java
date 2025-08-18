@@ -61,8 +61,9 @@ public class SecurityConfiguration {
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
                                 "/v3/api-docs/**",
-                                "/webjars/**")
-                        .permitAll()
+                                "/webjars/**").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
+                        .requestMatchers("/v1/debug/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcUserService()))
