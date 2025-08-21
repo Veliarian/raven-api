@@ -1,13 +1,11 @@
 package com.raven.api.auth.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.raven.api.auth.filters.JwtAuthenticationFilter;
 import com.raven.api.auth.filters.OAuth2AuthenticationSuccessHandler;
 import com.raven.api.users.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -20,13 +18,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -56,14 +51,13 @@ public class SecurityConfiguration {
                         .requestMatchers("/v1/users/avatar/**").permitAll()
                         .requestMatchers("/token/**").permitAll()
                         .requestMatchers("/v1/meetings/webhook").permitAll()
+                        .requestMatchers("/ws/**").permitAll()
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/swagger-resources/**",
                                 "/v3/api-docs/**",
                                 "/webjars/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll()
-                        .requestMatchers("/v1/debug/**").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.oidcUserService(oidcUserService()))

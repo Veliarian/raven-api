@@ -6,9 +6,6 @@ import com.raven.api.meetings.entity.Room;
 import com.raven.api.meetings.enums.RoomStatus;
 import com.raven.api.meetings.exceptions.RoomCreateException;
 import com.raven.api.meetings.repositories.RoomRepository;
-import com.raven.api.notifications.entity.Notification;
-import com.raven.api.notifications.enums.NotificationType;
-import com.raven.api.notifications.services.NotificationService;
 import com.raven.api.users.entity.User;
 import com.raven.api.users.services.UserService;
 import io.livekit.server.RoomServiceClient;
@@ -32,7 +29,6 @@ public class RoomService {
     private final RoomRepository repository;
     private final RoomRepository roomRepository;
     private final UserService userService;
-    private final NotificationService notificationService;
     private RoomServiceClient roomServiceClient;
 
     @Value("${livekit.api.host}")
@@ -108,12 +104,6 @@ public class RoomService {
             scheduledRoom.setSid(roomResponse.getSid());
             scheduledRoom.setStartTime(null);
             save(scheduledRoom);
-
-            Notification notification = new Notification();
-            notification.setTitle("Room started");
-            notification.setMessage("Room " + scheduledRoom.getName() + " has been started");
-            notification.setType(NotificationType.LESSON);
-            notificationService.sendToUser(1L, notification);
         }
     }
 
