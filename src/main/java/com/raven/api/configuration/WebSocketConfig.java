@@ -1,4 +1,4 @@
-package com.raven.api.notifications;
+package com.raven.api.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -12,17 +12,25 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // endpoint для підключення з клієнта (Vue/React/JS)
         registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*") // дозволяємо будь-який origin
-                .withSockJS(); // якщо треба підтримка старих браузерів
+                .setAllowedOriginPatterns("*")
+                .withSockJS();
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         // куди можна надсилати повідомлення з клієнта
         registry.setApplicationDestinationPrefixes("/app");
+
         // звідки клієнт отримає повідомлення
-        registry.enableSimpleBroker("/topic");
+        // Публічні топіки для групових повідомлень
+        registry.enableSimpleBroker(
+                "/topic",   // групові повідомлення
+                "/board",   // інтерактивна дошка
+                "/system",  // системні нотифікації
+                "/user"     // приватні повідомлення користувачам
+        );
+        registry.setUserDestinationPrefix("/user");  // наприклад, /user/queue/notifications
+
     }
 }

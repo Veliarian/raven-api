@@ -6,10 +6,13 @@ import com.raven.api.meetings.entity.Room;
 import com.raven.api.meetings.enums.RoomStatus;
 import com.raven.api.meetings.exceptions.RoomCreateException;
 import com.raven.api.meetings.repositories.RoomRepository;
+import com.raven.api.notifications.entity.RoomNotification;
+import com.raven.api.notifications.services.NotificationService;
 import com.raven.api.users.entity.User;
 import com.raven.api.users.services.UserService;
 import io.livekit.server.RoomServiceClient;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
 import livekit.LivekitModels;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +32,7 @@ public class RoomService {
     private final RoomRepository repository;
     private final RoomRepository roomRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
     private RoomServiceClient roomServiceClient;
 
     @Value("${livekit.api.host}")
@@ -94,6 +98,7 @@ public class RoomService {
     }
 
     @Scheduled(fixedRate = 30000)
+    @Transactional
     public void activateScheduledRoom() {
         List<Room> scheduledRooms = roomRepository.findAllByStatusAndStartTimeBefore(RoomStatus.SCHEDULED, LocalDateTime.now());
 
@@ -104,6 +109,13 @@ public class RoomService {
             scheduledRoom.setSid(roomResponse.getSid());
             scheduledRoom.setStartTime(null);
             save(scheduledRoom);
+
+            RoomNotification notification = new RoomNotification();
+            notification.setRoomId(scheduledRoom.getId());
+            notification.setRoomStatus(RoomStatus.ACTIVE);
+            notification.setTitle("Room Activated");
+            notification.setMessage("Room " + scheduledRoom.getName() + " has been activated");
+            notificationService.sendNotificationToUsers(notification, scheduledRoom.getParticipants().stream().toList());
         }
     }
 
