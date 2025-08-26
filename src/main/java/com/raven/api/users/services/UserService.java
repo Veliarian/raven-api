@@ -3,11 +3,9 @@ package com.raven.api.users.services;
 import com.raven.api.tools.exceptions.FileNotFoundException;
 import com.raven.api.tools.exceptions.ForbiddenException;
 import com.raven.api.users.dto.UpdateUserRequest;
-import com.raven.api.users.dto.UserResponse;
 import com.raven.api.users.entity.ProfilePicture;
 import com.raven.api.users.entity.UserProfile;
 import com.raven.api.users.enums.Role;
-import com.raven.api.users.exceptions.ProfilePictureNotFoundException;
 import com.raven.api.users.exceptions.UserAlreadyExistsException;
 import com.raven.api.users.entity.User;
 import com.raven.api.users.exceptions.UserNotFoundException;
@@ -16,23 +14,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

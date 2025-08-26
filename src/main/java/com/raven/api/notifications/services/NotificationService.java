@@ -5,6 +5,7 @@ import com.raven.api.notifications.entity.UserNotification;
 import com.raven.api.notifications.repositoryes.NotificationRepository;
 import com.raven.api.notifications.repositoryes.UserNotificationRepository;
 import com.raven.api.users.entity.User;
+import com.raven.api.users.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -19,6 +20,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserNotificationRepository userNotificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final UserService userService;
 
     @Transactional
     public void sendNotificationToUsers(Notification notification, List<User> users) {
@@ -33,7 +35,28 @@ public class NotificationService {
             userNotification.setRead(false);
             userNotificationRepository.save(userNotification);
 
-            messagingTemplate.convertAndSend("/topic/notifications", notification.getMessage());
+            messagingTemplate.convertAndSend("/topic/notifications", notification);
         }
+    }
+
+    @Transactional
+    public void sendNotificationToAllUsers(Notification notification, Object dto) {
+        notificationRepository.save(notification);
+
+        List<User> users = userService.getAll();
+        for (User user : users) {
+            UserNotification userNotification = new UserNotification();
+            userNotification.setUser(user);
+            userNotification.setNotification(notification);
+            userNotification.setRead(false);
+            userNotificationRepository.save(userNotification);
+        }
+
+        messagingTemplate.convertAndSend("/topic/notifications", dto);
+    }
+
+    public List<UserNotification> getUnreadNotifications() {
+        User user = userService.getCurrentUser();
+        return userNotificationRepository.findByUser_IdAndIsReadIsFalseOrderByCreatedAtDesc(user.getId());
     }
 }

@@ -1,5 +1,6 @@
 package com.raven.api.notifications.entity;
 
+import com.raven.api.notifications.enums.TargetType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,9 +25,7 @@ public class Notification {
     @SequenceGenerator(name = "notification_id_seq", sequenceName = "notification_id_seq", allocationSize = 1)
     private Long id;
 
-    private String title;
-
-    private String message;
+    private String code;
 
     private boolean read;
 

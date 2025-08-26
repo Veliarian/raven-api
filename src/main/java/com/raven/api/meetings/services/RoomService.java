@@ -3,10 +3,11 @@ package com.raven.api.meetings.services;
 import com.raven.api.meetings.dto.CreateRoomRequest;
 import com.raven.api.meetings.dto.RoomResponse;
 import com.raven.api.meetings.entity.Room;
+import com.raven.api.meetings.entity.RoomNotification;
+import com.raven.api.meetings.enums.MeetingNotificationCode;
 import com.raven.api.meetings.enums.RoomStatus;
 import com.raven.api.meetings.exceptions.RoomCreateException;
 import com.raven.api.meetings.repositories.RoomRepository;
-import com.raven.api.notifications.entity.RoomNotification;
 import com.raven.api.notifications.services.NotificationService;
 import com.raven.api.users.entity.User;
 import com.raven.api.users.services.UserService;
@@ -32,7 +33,7 @@ public class RoomService {
     private final RoomRepository repository;
     private final RoomRepository roomRepository;
     private final UserService userService;
-    private final NotificationService notificationService;
+    private final MeetingNotificationService notificationService;
     private RoomServiceClient roomServiceClient;
 
     @Value("${livekit.api.host}")
@@ -110,12 +111,7 @@ public class RoomService {
             scheduledRoom.setStartTime(null);
             save(scheduledRoom);
 
-            RoomNotification notification = new RoomNotification();
-            notification.setRoomId(scheduledRoom.getId());
-            notification.setRoomStatus(RoomStatus.ACTIVE);
-            notification.setTitle("Room Activated");
-            notification.setMessage("Room " + scheduledRoom.getName() + " has been activated");
-            notificationService.sendNotificationToUsers(notification, scheduledRoom.getParticipants().stream().toList());
+            notificationService.sendMeetingActivatedNotification(scheduledRoom);
         }
     }
 

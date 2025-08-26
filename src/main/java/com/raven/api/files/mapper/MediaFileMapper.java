@@ -2,12 +2,9 @@ package com.raven.api.files.mapper;
 
 import com.raven.api.files.dto.MediaFileResponse;
 import com.raven.api.files.entity.MediaFile;
-import com.raven.api.users.dto.UserResponse;
-import com.raven.api.users.entity.User;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
