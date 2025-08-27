@@ -19,7 +19,7 @@ public class NotificationMapper {
         return new NotificationResponse(
                 notification.getId(),
                 notification.getCode(),
-                notification.isRead()
+                userNotification.isRead()
         );
     }
 

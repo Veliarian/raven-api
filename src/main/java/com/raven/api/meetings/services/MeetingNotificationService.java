@@ -4,7 +4,6 @@ import com.raven.api.meetings.dto.RoomStartNotification;
 import com.raven.api.meetings.entity.Room;
 import com.raven.api.meetings.entity.RoomNotification;
 import com.raven.api.meetings.enums.MeetingNotificationCode;
-import com.raven.api.notifications.enums.TargetType;
 import com.raven.api.notifications.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,6 @@ public class MeetingNotificationService {
 
         RoomStartNotification dto = RoomStartNotification.from(notification);
 
-        notificationService.sendNotificationToAllUsers(notification, dto);
+        notificationService.sendNotificationToUsers(notification, dto, room.getParticipants().stream().toList());
     }
 }

@@ -8,7 +8,11 @@ import com.raven.api.users.entity.User;
 import com.raven.api.users.services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUser;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +25,10 @@ public class NotificationService {
     private final UserNotificationRepository userNotificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final UserService userService;
+    private final SimpUserRegistry simpUserRegistry;
 
     @Transactional
-    public void sendNotificationToUsers(Notification notification, List<User> users) {
+    public void sendNotificationToUsers(Notification notification, Object dto, List<User> users) {
         // Зберігаємо саму Notification
         notificationRepository.save(notification);
 
@@ -35,7 +40,15 @@ public class NotificationService {
             userNotification.setRead(false);
             userNotificationRepository.save(userNotification);
 
-            messagingTemplate.convertAndSend("/topic/notifications", notification);
+            SimpUser simpUser = simpUserRegistry.getUser(user.getUsername());
+            System.out.println("Send notification to user: " + user.getUsername() +
+                    " | Principal connected? " + (simpUser != null));
+
+            SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+            headerAccessor.setSessionId(user.getUsername());
+            headerAccessor.setLeaveMutable(true);
+
+            messagingTemplate.convertAndSendToUser(user.getUsername(),"/queue/notifications", dto, headerAccessor.getMessageHeaders());
         }
     }
 

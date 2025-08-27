@@ -1,6 +1,5 @@
 package com.raven.api.notifications.entity;
 
-import com.raven.api.notifications.enums.TargetType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,8 +25,6 @@ public class Notification {
     private Long id;
 
     private String code;
-
-    private boolean read;
 
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserNotification> userNotifications = new ArrayList<>();
