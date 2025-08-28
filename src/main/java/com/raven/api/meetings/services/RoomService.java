@@ -3,16 +3,12 @@ package com.raven.api.meetings.services;
 import com.raven.api.meetings.dto.CreateRoomRequest;
 import com.raven.api.meetings.dto.RoomResponse;
 import com.raven.api.meetings.entity.Room;
-import com.raven.api.meetings.entity.RoomNotification;
-import com.raven.api.meetings.enums.MeetingNotificationCode;
 import com.raven.api.meetings.enums.RoomStatus;
 import com.raven.api.meetings.exceptions.RoomCreateException;
 import com.raven.api.meetings.repositories.RoomRepository;
-import com.raven.api.notifications.services.NotificationService;
 import com.raven.api.users.entity.User;
 import com.raven.api.users.services.UserService;
 import io.livekit.server.RoomServiceClient;
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import livekit.LivekitModels;
 import lombok.RequiredArgsConstructor;
@@ -111,7 +107,7 @@ public class RoomService {
             scheduledRoom.setStartTime(null);
             save(scheduledRoom);
 
-            notificationService.sendMeetingActivatedNotification(scheduledRoom);
+            notificationService.sendRoomActivationNotification(scheduledRoom);
         }
     }
 

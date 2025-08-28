@@ -39,8 +39,6 @@ public class AuthChannelInterceptor implements ChannelInterceptor {
                         .loadUserByUsername(username);
 
                 if (jwtService.isTokenValid(token, userDetails)) {
-                    System.out.println("Username: " + username);
-                    System.out.println("UserDetails: " + userDetails.getUsername());
                     accessor.setUser(new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
                 } else {
                     throw new IllegalArgumentException("Invalid JWT token");

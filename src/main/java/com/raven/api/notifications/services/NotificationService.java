@@ -28,7 +28,7 @@ public class NotificationService {
     private final SimpUserRegistry simpUserRegistry;
 
     @Transactional
-    public void sendNotificationToUsers(Notification notification, Object dto, List<User> users) {
+    public void sendNotificationToUsers(Notification notification, Object dto, List<User> users, String destination) {
         // Зберігаємо саму Notification
         notificationRepository.save(notification);
 
@@ -40,15 +40,7 @@ public class NotificationService {
             userNotification.setRead(false);
             userNotificationRepository.save(userNotification);
 
-            SimpUser simpUser = simpUserRegistry.getUser(user.getUsername());
-            System.out.println("Send notification to user: " + user.getUsername() +
-                    " | Principal connected? " + (simpUser != null));
-
-            SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-            headerAccessor.setSessionId(user.getUsername());
-            headerAccessor.setLeaveMutable(true);
-
-            messagingTemplate.convertAndSendToUser(user.getUsername(),"/queue/notifications", dto, headerAccessor.getMessageHeaders());
+            messagingTemplate.convertAndSendToUser(user.getUsername(),destination, dto);
         }
     }
 

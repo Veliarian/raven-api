@@ -13,8 +13,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@DiscriminatorValue("ROOM")
-public class RoomNotification extends Notification {
+@DiscriminatorValue("MEETING")
+public class MeetingNotification extends Notification {
 
     @Column(name = "room_id")
     private Long roomId;

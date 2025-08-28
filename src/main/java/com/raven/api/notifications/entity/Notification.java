@@ -2,9 +2,12 @@ package com.raven.api.notifications.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @Entity
@@ -25,6 +28,13 @@ public class Notification {
     private Long id;
 
     private String code;
+
+    @Column(name = "type", insertable = false, updatable = false)
+    private String type;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Map<String, Object> params;
 
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserNotification> userNotifications = new ArrayList<>();

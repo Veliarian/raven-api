@@ -37,6 +37,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         // Публічні топіки для групових повідомлень
         registry.enableSimpleBroker(
                 "/topic",   // групові повідомлення
+                "/queue",
                 "/board",   // інтерактивна дошка
                 "/system"  // системні нотифікації
         );
