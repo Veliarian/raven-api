@@ -1,8 +1,11 @@
 package com.raven.api.notifications.mapper;
 
-import com.raven.api.notifications.dto.NotificationResponse;
+import com.raven.api.meetings.dto.RoomStartPayload;
+import com.raven.api.meetings.entity.MeetingNotification;
+import com.raven.api.notifications.dto.NotificationMessage;
 import com.raven.api.notifications.entity.Notification;
 import com.raven.api.notifications.entity.UserNotification;
+import jakarta.persistence.DiscriminatorValue;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -10,25 +13,36 @@ import java.util.stream.Collectors;
 
 @Component
 public class NotificationMapper {
-    public NotificationResponse toResponse(UserNotification userNotification) {
-        if (userNotification == null) return null;
-        if (userNotification.getNotification() == null) return null;
+    public NotificationMessage toMessage(UserNotification userNotification) {
+        return toMessage(userNotification.getNotification(), buildPayload(userNotification.getNotification()), userNotification.isRead());
+    }
 
-        Notification notification = userNotification.getNotification();
+    public NotificationMessage toMessage(Notification notification, Object payload) {
+        return toMessage(notification, payload, false);
+    }
 
-        return new NotificationResponse(
+    public List<NotificationMessage> toMessage(List<UserNotification> userNotifications) {
+        return userNotifications.stream()
+                .map(this::toMessage)
+                .toList();
+    }
+
+    private NotificationMessage toMessage(Notification notification, Object payload, boolean read) {
+        return new NotificationMessage(
                 notification.getId(),
-                notification.getCode(),
                 notification.getType(),
+                notification.getCode(),
                 notification.getParams(),
-                userNotification.isRead(),
-                userNotification.getCreatedAt()
+                notification.getCreatedAt(),
+                read,
+                payload
         );
     }
 
-    public List<NotificationResponse> toResponse(List<UserNotification> notifications) {
-        return notifications.stream()
-                .map(this::toResponse)
-                .collect(Collectors.toList());
+    private Object buildPayload(Notification notification) {
+        if (notification instanceof MeetingNotification mn) {
+            return new RoomStartPayload(mn.getRoomId(), mn.getRoomStatus());
+        }
+        return null;
     }
 }

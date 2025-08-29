@@ -1,7 +1,9 @@
 package com.raven.api.notifications.services;
 
+import com.raven.api.notifications.dto.NotificationMessage;
 import com.raven.api.notifications.entity.Notification;
 import com.raven.api.notifications.entity.UserNotification;
+import com.raven.api.notifications.mapper.NotificationMapper;
 import com.raven.api.notifications.repositoryes.NotificationRepository;
 import com.raven.api.notifications.repositoryes.UserNotificationRepository;
 import com.raven.api.users.entity.User;
@@ -24,15 +26,23 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserNotificationRepository userNotificationRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final NotificationMapper notificationMapper;
     private final UserService userService;
-    private final SimpUserRegistry simpUserRegistry;
 
+    /*
+     * Save a notification to db and send a message to users
+     * @param notification - notification to save
+     * @param message - message to send
+     * @param users - users to send message
+     * @param destination - destination for send a message
+     */
     @Transactional
-    public void sendNotificationToUsers(Notification notification, Object dto, List<User> users, String destination) {
-        // Зберігаємо саму Notification
-        notificationRepository.save(notification);
+    public void sendNotificationToUsers(Notification notification, Object payload, List<User> users, String destination) {
 
-        // Створюємо зв'язки з користувачами та відправляємо через WebSocket
+        notification = notificationRepository.save(notification);
+
+        NotificationMessage message = notificationMapper.toMessage(notification, payload);
+
         for (User user : users) {
             UserNotification userNotification = new UserNotification();
             userNotification.setUser(user);
@@ -40,7 +50,7 @@ public class NotificationService {
             userNotification.setRead(false);
             userNotificationRepository.save(userNotification);
 
-            messagingTemplate.convertAndSendToUser(user.getUsername(),destination, dto);
+            messagingTemplate.convertAndSendToUser(user.getUsername(), destination, message);
         }
     }
 
@@ -60,8 +70,9 @@ public class NotificationService {
         messagingTemplate.convertAndSend("/topic/notifications", dto);
     }
 
+    // Get all unread notifications for the current user
     public List<UserNotification> getUnreadNotifications() {
         User user = userService.getCurrentUser();
-        return userNotificationRepository.findByUser_IdAndIsReadIsFalseOrderByCreatedAtDesc(user.getId());
+        return userNotificationRepository.findByUser_IdAndIsReadIsFalseOrderByNotification_CreatedAtDesc(user.getId());
     }
 }

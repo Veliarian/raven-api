@@ -1,6 +1,6 @@
 package com.raven.api.notifications.controllers;
 
-import com.raven.api.notifications.dto.NotificationResponse;
+import com.raven.api.notifications.dto.NotificationMessage;
 import com.raven.api.notifications.entity.UserNotification;
 import com.raven.api.notifications.mapper.NotificationMapper;
 import com.raven.api.notifications.services.NotificationService;
@@ -22,8 +22,8 @@ public class NotificationController {
     private final NotificationMapper notificationMapper;
 
     @GetMapping
-    public ResponseEntity<List<NotificationResponse>> getUnreadNotifications(){
+    public ResponseEntity<List<NotificationMessage>> getUnreadNotifications(){
         List<UserNotification> notifications = notificationService.getUnreadNotifications();
-        return ResponseEntity.status(HttpStatus.OK).body(notificationMapper.toResponse(notifications));
+        return ResponseEntity.status(HttpStatus.OK).body(notificationMapper.toMessage(notifications));
     }
 }
