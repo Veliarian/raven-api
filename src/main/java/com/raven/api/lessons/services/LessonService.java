@@ -52,7 +52,7 @@ public class LessonService {
         Lesson lesson = Lesson.builder()
                 .subject(subject)
                 .topic(request.getTopic())
-                .description(request.getDescription())
+                .content(request.getContent())
                 .owner(user)
                 .build();
 
@@ -75,8 +75,8 @@ public class LessonService {
             updated = true;
         }
 
-        if(request.getDescription() != null && !lesson.getDescription().equals(request.getDescription())) {
-            lesson.setDescription(request.getDescription());
+        if(request.getDescription() != null && !lesson.getContent().equals(request.getDescription())) {
+            lesson.setContent(request.getDescription());
             updated = true;
         }
 

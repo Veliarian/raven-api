@@ -18,8 +18,8 @@ public class LessonResponse {
     @Schema(description = "Lesson topic", example = "Java Stream API")
     private String topic;
 
-    @Schema(description = "Lesson description", example = "How to use Stream API with arrays...")
-    private String description;
+    @Schema(description = "Lesson content", example = "How to use Stream API with arrays...")
+    private String content;
 
     @Schema(description = "Subject", example = "Java")
     private String subject;
@@ -27,7 +27,7 @@ public class LessonResponse {
     public LessonResponse(Lesson lesson) {
         this.id = lesson.getId();
         this.topic = lesson.getTopic();
-        this.description = lesson.getDescription();
+        this.content = lesson.getContent();
         this.subject = lesson.getSubject().getName();
     }
 }

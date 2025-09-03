@@ -20,5 +20,5 @@ public class LessonCreateRequest {
     private String topic;
 
     @Schema(description = "Description", example = "How to use Stream API with arrays...")
-    private String description;
+    private String content;
 }
